@@ -4,7 +4,9 @@ import homeController from '../controllers/homeController';
 let router = express.Router();
 
 let initWebRoutes = (app) => {
-    router.get("/", homeController.getHomePage);
+    router.get('/create-user', homeController.createUser);
+
+    router.post('/create-new-user',homeController.createUserCRUD);
 
     return app.use("/", router);
 }
