@@ -7,8 +7,8 @@ let createNewUser = (data) => {
         try {
             let password = await hashPassword(data.password);
             await db.User.create({
-                firstName : data.firstName,
-                lastName : data.lastName,
+                firstName: data.firstName,
+                lastName: data.lastName,
                 email: data.email,
                 password: password,
                 address: data.address,
@@ -40,8 +40,8 @@ let getListUser = () => {
     return new Promise(async (resolve, reject) => {
         try {
             let listUser = await db.User.findAll();
-            if(listUser) {
-               resolve(listUser); 
+            if (listUser) {
+                resolve(listUser);
             } else {
                 resolve([]);
             }
@@ -51,7 +51,44 @@ let getListUser = () => {
     })
 }
 
+let editUserCRUD = (userId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let userEditInfo = await db.User.findOne({
+                where: { id: userId },
+                raw: true,
+            });
+            if (userEditInfo) {
+                resolve(userEditInfo);
+            } else {
+                resolve([]);
+            }
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
+
+let updateUserInfoCRUD = (user) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            await db.User.update({
+                firstName: user.firstName,
+                lastName: user.lastName,
+                address: user.address,
+                phonenumber: user.phonenumber,
+            }, { where: { id: user.id } });
+            let listUser = db.User.findAll();
+            resolve(listUser);
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
+
 module.exports = {
     createNewUser: createNewUser,
     getListUser: getListUser,
+    editUserCRUD: editUserCRUD,
+    updateUserInfoCRUD: updateUserInfoCRUD,
 }
