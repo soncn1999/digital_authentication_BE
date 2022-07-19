@@ -16,7 +16,26 @@ let createUserCRUD = async (req, res) => {
     });
 }
 
+let editUser = async (req, res) => {
+    let userId = req.query.id;
+    let userEdit = await CRUDService.editUserCRUD(userId);
+    console.log(userEdit);
+    return res.render('editUser.ejs', {
+        user: userEdit,
+    });
+}
+
+let updateUserInfoCRUD = async (req, res) => {
+    let user = req.body;
+    let userUpdateInfo = await CRUDService.updateUserInfoCRUD(user);
+    return res.render('createUser',{
+        users : userUpdateInfo,
+    });
+}
+
 module.exports = {
     createUser: createUser,
     createUserCRUD: createUserCRUD,
+    editUser: editUser,
+    updateUserInfoCRUD: updateUserInfoCRUD
 };
