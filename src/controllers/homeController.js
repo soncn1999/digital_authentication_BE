@@ -1,41 +1,83 @@
-import db from '../models/index';
 import CRUDService from '../services/CRUDService';
+import AuthService from '../services/AuthenticationService';
 
-let createUser = async (req, res) => {
-    let listUser = await CRUDService.getListUser();
-    return res.render('createUser', {
-        users: listUser,
-    });
+let createNewUser = async (req, res) => {
+    try {
+        let response = await CRUDService.handleCreateNewUser(req.body);
+        return res.status(200).json(response);
+    } catch (errors) {
+        return res.status(200).json({
+            errCode: -1,
+            message: errors,
+        })
+    }
 }
 
-let createUserCRUD = async (req, res) => {
-    let data = req.body;
-    let newUser = await CRUDService.createNewUser(data);
-    return res.render('createUser', {
-        users: newUser,
-    });
+let loginUser = async (req, res) => {
+    try {
+        let response = await CRUDService.handleloginUser(req.body);
+        return res.status(200).json(response);
+    } catch (errors) {
+        return res.status(200).json({
+            errCode: -1,
+            message: 'Missing from server, try again',
+        })
+    }
 }
 
-let editUser = async (req, res) => {
-    let userId = req.query.id;
-    let userEdit = await CRUDService.editUserCRUD(userId);
-    console.log(userEdit);
-    return res.render('editUser.ejs', {
-        user: userEdit,
-    });
+let createSignature = async (req, res) => {
+    try {
+        let response = await AuthService.generateSignature(req.body);
+        return res.status(200).json(response);
+    } catch (errors) {
+        return res.status(200).json({
+            errCode: -1,
+            message: 'Missing from server, try again',
+        })
+    }
 }
 
-let updateUserInfoCRUD = async (req, res) => {
-    let user = req.body;
-    let userUpdateInfo = await CRUDService.updateUserInfoCRUD(user);
-    return res.render('createUser',{
-        users : userUpdateInfo,
-    });
+let verifySignature = async (req, res) => {
+    try {
+        let response = await AuthService.handleVerifySignature(req.body);
+        return res.status(200).json(response);
+    } catch (errors) {
+        return res.status(200).json({
+            errCode: -1,
+            message: 'Missing from server, try again',
+        })
+    }
+}
+
+let encryptData = async (req, res) => {
+    try {
+        let response = await AuthService.encryptWithPublicKey(req.body);
+        return res.status(200).json(response);
+    } catch (errors) {
+        return res.status(200).json({
+            errCode: -1,
+            message: 'Missing from server, try again',
+        })
+    }
+}
+
+let decryptData = async (req, res) => {
+    try {
+        let response = await AuthService.decryptWithPrivateKey(req.body);
+        return res.status(200).json(response);
+    } catch (errors) {
+        return res.status(200).json({
+            errCode: -1,
+            message: 'Missing from server, try again',
+        })
+    }
 }
 
 module.exports = {
-    createUser: createUser,
-    createUserCRUD: createUserCRUD,
-    editUser: editUser,
-    updateUserInfoCRUD: updateUserInfoCRUD
+    createNewUser: createNewUser,
+    loginUser: loginUser,
+    createSignature: createSignature,
+    encryptData: encryptData,
+    decryptData: decryptData,
+    verifySignature: verifySignature,
 };

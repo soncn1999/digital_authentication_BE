@@ -4,13 +4,17 @@ import homeController from '../controllers/homeController';
 let router = express.Router();
 
 let initWebRoutes = (app) => {
-    router.get('/create-user', homeController.createUser);
+    router.post('/api/create-user', homeController.createNewUser);
 
-    router.post('/create-new-user',homeController.createUserCRUD);
+    router.get('/api/login', homeController.loginUser);
 
-    router.get('/edit-user', homeController.editUser);
+    router.post('/api/create-signature', homeController.createSignature);
 
-    router.post('/update-user', homeController.updateUserInfoCRUD);
+    router.post('/api/verify-signature', homeController.verifySignature);
+
+    router.post('/api/encrypt-data', homeController.encryptData);
+
+    router.post('/api/decrypt-data', homeController.decryptData);
 
     return app.use("/", router);
 }
