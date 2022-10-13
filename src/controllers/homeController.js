@@ -15,6 +15,7 @@ let createNewUser = async (req, res) => {
 
 let loginUser = async (req, res) => {
     try {
+        console.log(req.body);
         let response = await CRUDService.handleloginUser(req.body);
         return res.status(200).json(response);
     } catch (errors) {

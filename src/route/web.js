@@ -6,7 +6,7 @@ let router = express.Router();
 let initWebRoutes = (app) => {
     router.post('/api/create-user', homeController.createNewUser);
 
-    router.get('/api/login', homeController.loginUser);
+    router.post('/api/login', homeController.loginUser);
 
     router.post('/api/create-signature', homeController.createSignature);
 

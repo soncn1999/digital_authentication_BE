@@ -12,7 +12,6 @@ let generateSignature = (data) => {
                 let dataHash = handleHashData(data.message);
                 let signData = new Buffer(dataHash);
                 let sign = crypto.sign("SHA256", signData, privateKeyObject);
-
                 let user_info = await getUserInfo('TOKEN', data.token);
 
                 let response = await db.Auth_info.update({
@@ -84,8 +83,8 @@ let encryptWithPublicKey = (data) => {
     return new Promise(async (resolve, reject) => {
         try {
             if (data.plainText && data.publicKey) {
-                let isSenderPublicKey = await handleVerifyCertificate(data);
-                if (isSenderPublicKey.data) {
+                // let isSenderPublicKey = await handleVerifyCertificate(data);
+                if (true) {
                     let publicKeyObject = crypto.createPublicKey(data.publicKey);
                     let encryptMe = crypto.publicEncrypt({
                         key: publicKeyObject,
@@ -121,6 +120,7 @@ let decryptWithPrivateKey = (data) => {
             if (data.privateKey && data.cipherText) {
                 let privateKeyObject = crypto.createPrivateKey(data.privateKey);
                 let CipherTextData = new Buffer(data.cipherText, 'base64');
+
                 let decryptData = crypto.privateDecrypt({
                     key: privateKeyObject,
                     padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
@@ -210,8 +210,11 @@ let handleVerifyCertificate = (data) => {
 
                     if (CAData) {
                         let certificateData = `${getCAInfo.email} ${CAData.sign} ${data.username} ${data.publicKey}`;
+
                         let certificateDataHash = handleHashData(certificateData);
+
                         let publicKeyObject = crypto.createPublicKey(getCAInfo.public_key);
+
                         let certificateDataBuffer = new Buffer(certificateDataHash);
                         let certificateDataConvert = new Buffer(data.certificate, 'base64');
                         let isVerified = crypto.verify("SHA256", certificateDataBuffer, publicKeyObject, certificateDataConvert);

@@ -36,7 +36,9 @@ let handleCreateNewUser = (data) => {
 
                 if (created) {
                     let userCertificate = await handleCreateCertificate({ username: data.email, publicKey: publicKeyExport });
+
                     let userInfo = await getUserByEmail(data.email);
+
                     let certificate = await db.Auth_info.create({
                         certificate: userCertificate.data,
                         user_id: userInfo.id,
@@ -49,6 +51,7 @@ let handleCreateNewUser = (data) => {
                             private_key: privateKeyExport,
                             public_key: publicKeyExport,
                             certificate: userCertificate.data,
+                            data: userInfo,
                         })
                     } else {
                         resolve({
@@ -89,8 +92,7 @@ let handleCreateNewUser = (data) => {
                 let dataHash = handleHashData(dataSignature);
                 let CASign = generateSignature(dataHash, privateKeyExport);
 
-                let checkCASign = handleVerifySignature(dataSignature, publicKeyExport, CASign.toString('base64'));
-                console.log(checkCASign);
+                // let checkCASign = handleVerifySignature(dataSignature, publicKeyExport, CASign.toString('base64'));
 
                 let findUser = await db.User.findOne({
                     where: { email: data.email },
@@ -183,10 +185,11 @@ let handleloginUser = (data) => {
         try {
             if (data.email && data.password) {
                 let response = await getUserByEmail(data.email);
-
                 if (response) {
                     let passwordCompareResult = await bcrypt.compare(data.password, response.password);
+
                     delete response.password;
+
                     if (passwordCompareResult) {
                         resolve({
                             errCode: 0,
@@ -225,10 +228,11 @@ let getUserByEmail = (email) => {
                     email: email,
                 },
                 attributes: {
-                    exclude: ['createdAt', 'updatedAt']
+                    exclude: ['createdAt', 'updatedAt', 'publicKey']
                 },
                 raw: true,
             });
+
             if (response) {
                 resolve(response);
             } else {
@@ -253,6 +257,7 @@ let handleCreateCertificate = (data) => {
                         },
                         raw: true,
                     });
+
                     if (CAData) {
                         let certificateData = `${getCAInfo.email} ${CAData.sign} ${data.username} ${data.publicKey}`;
                         let certificateDataHash = handleHashData(certificateData);
